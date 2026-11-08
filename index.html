@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Formless sign-in</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; background: #0e1014; color: #e8eaf0; display: grid; place-items: center; min-height: 100vh; margin: 0; }
+  main { max-width: 420px; padding: 24px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <p id="msg">Returning to Formless…</p>
+</main>
+<script>
+  // Zoom sends the sign-in result here; hand it to Formless on this same computer (port 8765).
+  // Only the "code" and "state" values are passed on, and only to 127.0.0.1. Nothing is stored or sent elsewhere.
+  (function () {
+    var q = new URLSearchParams(location.search);
+    var code = q.get("code"), state = q.get("state");
+    if (!code || !state) {
+      document.getElementById("msg").textContent = q.get("error") ? "Sign-in was cancelled or refused: " + q.get("error") : "Nothing to do here.";
+      return;
+    }
+    var out = new URLSearchParams({ code: code, state: state });
+    location.replace("http://127.0.0.1:8765/callback?" + out.toString());
+  })();
+</script>
+</body>
+</html>
